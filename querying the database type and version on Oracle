@@ -1,0 +1,19 @@
+🎯 Goal
+The objective of this challenge was to exploit a SQL injection vulnerability in the product category filter to retrieve the database type and version on Oracle using a UNION attack.
+
+🕵️ Methodology
+Identifying the Weakness: The application filters products by category. By injecting SQL payloads into the category parameter, I can append a second query to the original one.
+Entry Point: The category parameter in the URL.
+Initial Test: Adding a single quote ' resulted in a 500 Internal Server Error, confirming the vulnerability.
+Determining Columns: Before retrieving the version, I had to determine that the query returns 2 columns (using ORDER BY or UNION SELECT NULL, NULL).
+
+💀 The Payload
+' UNION SELECT banner, NULL FROM v$version--
+
+🔍 Technical Breakdown
+The Single Quote ('): Terminates the original string literal in the WHERE clause.
+UNION SELECT: Appends the results from the v$version table to the original result set.
+banner: This is the specific column name in Oracle's v$version table that holds the version details.
+NULL: Used to match the number of columns in the original query (since the original query has two columns, and we only need one for the banner).
+FROM v$version: In Oracle, every SELECT must have a FROM clause.
+The Comment (--%20): Instructs the database to ignore the rest of the original SQL query, preventing syntax errors.

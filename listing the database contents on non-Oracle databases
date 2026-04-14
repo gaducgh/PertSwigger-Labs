@@ -1,0 +1,38 @@
+🎯 Goal
+The objective of this challenge was to exploit a SQL injection vulnerability in the product category filter to map the database schema, identify the hidden users table, and retrieve the administrator's credentials.
+
+🕵️ Methodology
+The attack followed a systematic Database Enumeration approach because the table and column names were non-standard and randomized.
+
+Determining Column Count: Confirmed the original query returns 2 columns using UNION SELECT NULL, NULL.
+
+Mapping the Schema (Tables): Queried information_schema.tables to find the application’s user table.
+
+Result: Found a suspicious table named users_jdizre.
+
+Mapping the Schema (Columns): Queried information_schema.columns to find the exact field names within that table.
+
+Result: Identified username_rwtmcg and password_ljvmks.
+
+Data Exfiltration: Pulled the cleartext credentials from the identified table and columns.
+
+💀 The Payloads (Key Steps)
+
+Step 1: Finding the Table Name
+' UNION SELECT table_name, NULL FROM information_schema.tables--
+(Found: users_jdizre)
+
+Step 2: Finding the Column Names
+' UNION SELECT column_name, NULL FROM information_schema.columns WHERE table_name='users_jdizre'--
+(Found: username_rwtmcg, password_ljvmks)
+
+Step 3: Extracting Credentials
+' UNION SELECT username_rwtmcg, password_ljvmks FROM users_jdizre--
+
+🔍 Technical Breakdown
+
+information_schema: Used as a roadmap to navigate the PostgreSQL database structure.
+
+Randomized Names: The use of names like users_jdizre is a common defense mechanism (Security by Obscurity), which was bypassed by querying the database metadata.
+
+UNION Attack: Leveraged to display data from the hidden users_jdizre table directly onto the web page's category display.

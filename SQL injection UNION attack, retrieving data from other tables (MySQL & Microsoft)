@@ -1,0 +1,19 @@
+🎯 Goal
+The objective of this challenge was to exploit a SQL injection vulnerability in the product category filter to retrieve the database version information specifically for MySQL or Microsoft SQL Server.
+
+🕵️ Methodology
+Entry Point: The category parameter in the URL.
+Database Fingerprinting: Through testing, the database was identified as one that supports the version() function (Common in MySQL and PostgreSQL).
+Column Matching: Confirmed that the original query returns 2 columns, which is essential for a successful UNION attack.
+
+💀 The Payload
+' UNION SELECT version(), NULL#
+(Or as you used: ' UNION SELECT version(), NULL--%20)
+
+🔍 Technical Breakdown
+The Single Quote ('): Terminates the original category string.
+UNION SELECT: Merges the original result set with the output of the version function.
+version(): A built-in SQL function that returns a string containing the database's version and build information.
+NULL: Matches the second column of the original query to maintain structural integrity.
+The Comment (--%20 or #): * In MySQL, --  (with a space) or # is used to comment out the rest of the query.
+Your use of --%20 (where %20 is the URL-encoded space) is the correct way to ensure the database recognizes the comment and ignores the trailing original SQL code.

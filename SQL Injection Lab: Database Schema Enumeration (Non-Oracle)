@@ -1,0 +1,37 @@
+SQL Injection Lab: Database Schema Enumeration (Non-Oracle)
+
+🎯 Goal
+The objective of this challenge was to exploit a SQL injection vulnerability in the product category filter to retrieve the schema information and extract sensitive user credentials from a non-Oracle database (PostgreSQL) using a UNION attack.
+🕵️ Methodology
+Identifying the Weakness: The application uses a category filter that is vulnerable to SQL injection. A single quote ' triggered a server error, confirming the entry point.
+Entry Point: The category parameter in the URL.
+Initial Test: Adding a single quote ' resulted in a 500 Internal Server Error, confirming the vulnerability.
+Determining Columns: Using UNION SELECT NULL, NULL--%20, I confirmed the original query returns 2 columns, which is essential for aligning the injected query.
+
+Schema Enumeration:
+  Finding Tables: Queried information_schema.tables to identify custom application tables.
+     'UNION SELECT table_name,NULL FROM information_schema.tables--%20
+
+  Finding Columns: Once the table users_jdizre was discovered, I queried information_schema.columns to map the specific field names.
+    ' UNION SELECT column_name,NULL FROM information_schema.columns WHERE table_name='users_jdizre'--%20
+   
+
+  Data Extraction: Performed the final UNION SELECT to dump the usernames and passwords from the identified columns.
+    ' UNION SELECT email,password_ljvmks FROM users_jdizre--%20
+    ' UNION SELECT password_ljvmks,username_rwtmcg FROM users_jdizre--%20
+
+💀 The Payload
+To extract the credentials:
+' UNION SELECT username_rwtmcg, password_ljvmks FROM users_jdizre--
+
+🔍 Technical Breakdown
+The Single Quote ('): Breaks the original SQL string syntax to allow for command injection.
+UNION SELECT: Combines the result set from the original query with the results from the users_jdizre table.
+information_schema: A standard database schema in PostgreSQL/MySQL that contains metadata about all other objects in the database.
+Column Mapping: Since the original query expected two columns, I selected both the username and password fields to maintain structural consistency.
+The Comment (--%20): Nullifies the remainder of the original query to ensure the injected payload executes without syntax errors.
+
+📊 Final Findings
+Through this attack, I successfully retrieved the credentials for three users. The administrative account was identified as:
+User: administrator
+Password: 4nxlpwnfrl6rh2zo4te5

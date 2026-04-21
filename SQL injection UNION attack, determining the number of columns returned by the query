@@ -1,0 +1,20 @@
+SQL injection UNION attack, determining the number of columns returned by the query
+
+🎯 Goal
+The objective of this challenge was to determine the exact number of columns returned by the original database query. This was achieved by performing a SQL injection UNION attack, injecting a row of NULL values until the application response returned successfully.
+
+🕵️ Methodology
+Entry Point: The category parameter in the URL.
+Database Fingerprinting: Conducted iterative testing by adding NULL constants to the UNION SELECT statement.
+Column Matching: Confirmed that the original query returns 3 columns. (Ensure this matches your actual lab result).
+
+💀 The Payload
+' UNION SELECT NULL, NULL, NULL FROM information_schema.tables--%20
+
+🔍 Technical Breakdown
+The Single Quote ('): Breaks the SQL string literal to allow for the injection of additional commands.
+UNION SELECT: Combines the result set of the original query with the results of the injected query.
+NULL: Used as a placeholder because it is compatible with every data type, preventing "Data Type Mismatch" errors during the discovery phase.
+information_schema.tables: A built-in schema that provides metadata about the database. It serves as a valid source for the SELECT statement.
+The Comment (--%20): Appending -- (followed by a URL-encoded space %20) ensures the database ignores any remaining part of the original SQL query, preventing syntax errors.
+
